@@ -1,0 +1,10 @@
+[Unit]
+Description=USTC Daily Checkin Timer
+
+[Timer]
+OnCalendar=*-*-* 10:00
+RandomizedDelaySec=10h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
