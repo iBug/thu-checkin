@@ -1,9 +1,9 @@
 [Unit]
-Description=USTC Daily Checkin Timer
+Description=Tsinghua University Daily Checkin Timer
 
 [Timer]
 OnCalendar=*-*-* 10:00
-RandomizedDelaySec=10h
+RandomizedDelaySec=8h
 Persistent=true
 
 [Install]

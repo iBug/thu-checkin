@@ -1,6 +1,6 @@
 [Unit]
-Description=USTC Daily Checkin Service
-Requires=network.target network-online.target
+Description=Tsinghua University Daily Checkin Service
+After=network.target network-online.target
 
 [Service]
 Type=oneshot
