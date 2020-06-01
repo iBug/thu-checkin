@@ -33,8 +33,6 @@
 
     ![image](https://user-images.githubusercontent.com/7273074/82295949-0fcde880-99e3-11ea-956b-fddbd003c3bc.png)
 
-- 将文件 [`checkin.yml`](checkin.yml) 重命名并移动到 `.github/workflows/checkin.yml`，push 一次，然后就可以在你 fork 的仓库里看到 Actions 运行了。
-
 本方法默认在每天 10:00 打卡一次，不支持随机时间，也可以自行编辑 `checkin.yml` 设置打卡时间。
 
 ## 许可
