@@ -22,3 +22,4 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           PROVINCE: ${{ secrets.PROVINCE }}
           CITY: ${{ secrets.CITY }}
+          IS_INSCHOOL: ${{ secrets.IS_INSCHOOL }}

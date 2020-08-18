@@ -18,32 +18,32 @@
     PASSWORD=你的CAS登录密码
     PROVINCE=省份代号
     CITY=城市代号
-    IS_INSCHOOL=是否在校
+    IS_INSCHOOL=在校状态
     ```
 
     其中省份代号和城市代号可以在 [这里](http://www.tcmap.com.cn/list/daima_list.html) 查到。
 
-    `IS_INSCHOOL` 对应的值为：
+    在校状态 `IS_INSCHOOL` 的取值为：
 
-    | Value | Meaning |
-    | ----- | ------- |
-    | 2     | 东区    |
-    | 3     | 南区    |
-    | 4     | 中区    |
-    | 5     | 北区    |
-    | 6     | 西区    |
-    | 0     | 校外    |
+    | 值 | 含义 |
+    | -- | ---- |
+    | 0  | 校外 |
+    | 2  | 东区 |
+    | 3  | 南区 |
+    | 4  | 中区 |
+    | 5  | 北区 |
+    | 6  | 西区 |
 
-    > IS_INSCHOOL 默认为 0
+    默认为 2，即东区。该项目仅当省份城市为安徽合肥（340000 + 340100）时会填报。
 
 本套件默认在每天 10:00 至 18:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `ustc-checkin.timer` 文件设置打卡时间。
 
-你也可以使用 `systemctl status ustc-checkin.timer` 查看打卡记录和下次打卡时间。
+你可以使用 `systemctl status ustc-checkin.timer` 查看打卡记录和下次打卡时间。
 
 ## 使用方法二（GitHub Actions，不推荐）
 
 - [Fork](https://github.com/iBug/ustc-checkin/fork) 本仓库
-- 转到你 fork 的仓库，进入 Settings → Secrets，按上面说明添加四个 Secret，如图：
+- 转到你 fork 的仓库，进入 Settings → Secrets，按上面说明添加五个 Secret，如图：
 
     ![image](https://user-images.githubusercontent.com/7273074/82295949-0fcde880-99e3-11ea-956b-fddbd003c3bc.png)
 

@@ -4,15 +4,16 @@ import os
 import re
 import requests
 
+
 username = os.environ["USERNAME"]
 password = os.environ["PASSWORD"]
 province = os.environ['PROVINCE']
 city = os.environ["CITY"]
-is_inschool = os.environ.get('IS_INSCHOOL', '0')
+is_inschool = os.environ.get("IS_INSCHOOL", "2")
 
-# 1 在校园内
-# 2 正常在家
-now_status = '2' if is_inschool == '0' else '1'
+# 1: 在校园内, 2: 正常在家
+now_status = "2" if is_inschool == "0" else "1"
+
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
@@ -22,7 +23,7 @@ REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 print("Tsinghua University Daily Health Report")
 
 s = requests.Session()
-s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"
+s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
 s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
 
 data = {
@@ -69,14 +70,14 @@ data = {
     # https://twitter.com/tenderlove/status/722565868719177729
 }
 
-if is_inschool != '0':
-    assert province == '340000'
-    assert city == '340100'
-    data['is_inschool'] = is_inschool
+# Set "in_school" only when located in the right city
+if province == "340000" and city == "340100":
+    data["is_inschool"] = is_inschool
 
 r = s.post(REPORT_URL, data=data)
 
-assert r.text.find('上报成功') >= 0
-
 # Fail if not 200
 r.raise_for_status()
+
+# Fail if not reported
+assert r.text.find("上报成功") >= 0
