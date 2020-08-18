@@ -18,9 +18,23 @@
     PASSWORD=你的CAS登录密码
     PROVINCE=省份代号
     CITY=城市代号
+    IS_INSCHOOL=是否在校
     ```
 
     其中省份代号和城市代号可以在 [这里](http://www.tcmap.com.cn/list/daima_list.html) 查到。
+
+    `IS_INSCHOOL` 对应的值为：
+
+    | Value | Meaning |
+    | ----- | ------- |
+    | 2     | 东区    |
+    | 3     | 南区    |
+    | 4     | 中区    |
+    | 5     | 北区    |
+    | 6     | 西区    |
+    | 0     | 校外    |
+
+    > IS_INSCHOOL 默认为 0
 
 本套件默认在每天 10:00 至 18:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `ustc-checkin.timer` 文件设置打卡时间。
 
