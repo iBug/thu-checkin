@@ -4,6 +4,12 @@ import os
 import re
 import requests
 
+# https://stackoverflow.com/a/35504626/5958455
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
+
+
+print("Tsinghua University Daily Health Report")
 
 username = os.environ["USERNAME"]
 password = os.environ["PASSWORD"]
@@ -20,9 +26,13 @@ CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 
-print("Tsinghua University Daily Health Report")
+
+retries = Retry(total=5,
+                backoff_factor=0.5,
+                status_forcelist=[500, 502, 503, 504])
 
 s = requests.Session()
+s.mount("https://", HTTPAdapter(max_retries=retries))
 s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
 s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
 
@@ -35,7 +45,7 @@ data = {
     "password": password,
     "button": "",
 }
-r = s.post("https://passport.ustc.edu.cn/login", data=data)
+r = s.post(CAS_LOGIN_URL, data=data)
 
 # Parse the "_token" key out
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
