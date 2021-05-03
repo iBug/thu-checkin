@@ -1,6 +1,6 @@
 # 清华大学每日健康打卡 systemd 版
 
-## 使用方法一（自己部署，推荐）
+## 使用方法
 
 环境要求：
 
@@ -39,15 +39,6 @@
 本套件默认在每天 10:00 至 18:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `ustc-checkin.timer` 文件设置打卡时间。
 
 你可以使用 `systemctl status ustc-checkin.timer` 查看打卡记录和下次打卡时间。
-
-## 使用方法二（GitHub Actions，不推荐）
-
-- [Fork](https://github.com/iBug/ustc-checkin/fork) 本仓库
-- 转到你 fork 的仓库，进入 Settings → Secrets，按上面说明添加五个 Secret，如图：
-
-    ![image](https://user-images.githubusercontent.com/7273074/82295949-0fcde880-99e3-11ea-956b-fddbd003c3bc.png)
-
-本方法默认在每天 10:00 打卡一次，不支持随机时间，也可以自行编辑 `checkin.yml` 设置打卡时间。
 
 ## 许可
 
