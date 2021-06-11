@@ -11,11 +11,18 @@ from requests.adapters import HTTPAdapter
 
 print("Tsinghua University Daily Health Report")
 
-username = os.environ["USERNAME"]
-password = os.environ["PASSWORD"]
-province = os.environ['PROVINCE']
-city = os.environ["CITY"]
-is_inschool = os.environ.get("IS_INSCHOOL", "2")
+dirname = os.path.dirname(os.path.realpath(__file__))
+data = {}
+with open(os.path.join(dirname, "ustc-checkin.txt"), "r") as f:
+    for line in f:
+        k, v = line.strip().split('=', 1)
+        data[k] = v
+
+username = data["USERNAME"]
+password = data["PASSWORD"]
+province = data['PROVINCE']
+city = data["CITY"]
+is_inschool = data.get("IS_INSCHOOL", "2")
 
 # 1: 在校园内, 2: 正常在家
 now_status = "2" if is_inschool == "0" else "1"

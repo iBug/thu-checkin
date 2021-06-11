@@ -11,7 +11,7 @@
 
 - 将 `ustc-checkin.py` 复制到 `/root` 目录下
 - 将 `ustc-checkin.service` 和 `ustc-checkin.timer` 复制到 `/etc/systemd/system` 目录下，并执行 `systemctl daemon-reload` 和 `systemctl enable --now ustc-checkin.timer`
-- 在 `/root` 目录下创建 `ustc-checkin.txt` 文件，填入以下内容：
+- 在 `/root` 目录下创建 [`ustc-checkin.txt` 文件](ustc-checkin.example.txt)，填入以下内容：
 
     ```ini
     USERNAME=你的CAS登录学号
