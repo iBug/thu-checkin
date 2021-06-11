@@ -1,8 +1,12 @@
 #!/usr/bin/python3
 
+import hashlib
+import hmac
+import json
 import os
 import re
 import requests
+import time
 
 # https://stackoverflow.com/a/35504626/5958455
 from urllib3.util.retry import Retry
@@ -11,9 +15,17 @@ from requests.adapters import HTTPAdapter
 
 print("Tsinghua University Daily Health Report")
 
+while True:
+    try:
+        requests.get("http://test6.ustc.edu.cn/", timeout=1)
+    except requests.exceptions.ConnectionError:
+        time.sleep(1)
+    else:
+        break
+
 dirname = os.path.dirname(os.path.realpath(__file__))
 data = {}
-with open(os.path.join(dirname, "ustc-checkin.txt"), "r") as f:
+with open(os.path.join(dirname, "data.txt"), "r") as f:
     for line in f:
         k, v = line.strip().split('=', 1)
         data[k] = v
@@ -32,6 +44,7 @@ CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
+more_headers = {"Referer": "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fweixine.ustc.edu.cn%2F2020%2Fcaslogin"}
 
 
 retries = Retry(total=5,
@@ -52,7 +65,7 @@ data = {
     "password": password,
     "button": "",
 }
-r = s.post(CAS_LOGIN_URL, data=data)
+r = s.post(CAS_LOGIN_URL, data=data, headers=more_headers)
 
 # Parse the "_token" key out
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
@@ -75,14 +88,14 @@ data = {
     "last_touch_sars": "0",
     "last_touch_sars_date": "",
     "last_touch_sars_detail": "",
-    "last_touch_hubei": "0",
-    "last_touch_hubei_date": "",
-    "last_touch_hubei_detail": "",
-    "last_cross_hubei": "0",
-    "last_cross_hubei_date": "",
-    "last_cross_hubei_detail": "",
-    "return_dest": "1",
-    "return_dest_detail": "",
+    #"last_touch_hubei": "0",
+    #"last_touch_hubei_date": "",
+    #"last_touch_hubei_detail": "",
+    #"last_cross_hubei": "0",
+    #"last_cross_hubei_date": "",
+    #"last_cross_hubei_detail": "",
+    #"return_dest": "1",
+    #"return_dest_detail": "",
     "other_detail": "\uFFFD",
     # https://twitter.com/tenderlove/status/722565868719177729
 }
@@ -91,10 +104,23 @@ data = {
 if province == "340000" and city == "340100":
     data["is_inschool"] = is_inschool
 
-r = s.post(REPORT_URL, data=data)
+r = s.post(REPORT_URL, data=data, headers={"Referer": r.url})
+with open(os.path.join(dirname, "last.html"), "wb") as f:
+    f.write(r.content)
 
 # Fail if not 200
 r.raise_for_status()
 
-# Fail if not reported
-assert r.text.find("上报成功") >= 0
+if r.text.find("上报成功") >= 0:
+    payload = json.dumps({"type": "checkin"})
+else:
+    payload = json.dumps({"type": "checkin-fail"})
+signature = hmac.new(b"REDACTED", payload.encode("utf-8"), hashlib.sha1).hexdigest()
+headers = {
+    "Content-Type": "application/json",
+    "X-GitHub-Event": "REDACTED",
+    "X-Hub-Signature": f"sha1={signature}",
+}
+r = requests.post("https://www.example.com/", headers=headers, data=payload)
+print(r)
+print(r.text)
