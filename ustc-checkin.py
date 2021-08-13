@@ -22,6 +22,7 @@ username = data["USERNAME"]
 password = data["PASSWORD"]
 province = data['PROVINCE']
 city = data["CITY"]
+country = data["COUNTRY"]
 is_inschool = data.get("IS_INSCHOOL", "2")
 
 # 1: 在校园内, 2: 正常在家
@@ -66,6 +67,8 @@ data = {
     "gps_province": "",
     "now_city": city,
     "gps_city": "",
+    "now_country": country,
+    "gps_country": "",
     "now_detail": "",
     "body_condition": "1",
     "body_condition_detail": "",
@@ -75,14 +78,7 @@ data = {
     "last_touch_sars": "0",
     "last_touch_sars_date": "",
     "last_touch_sars_detail": "",
-    "last_touch_hubei": "0",
-    "last_touch_hubei_date": "",
-    "last_touch_hubei_detail": "",
-    "last_cross_hubei": "0",
-    "last_cross_hubei_date": "",
-    "last_cross_hubei_detail": "",
-    "return_dest": "1",
-    "return_dest_detail": "",
+    "is_danger": "0",
     "other_detail": "\uFFFD",
     # https://twitter.com/tenderlove/status/722565868719177729
 }
