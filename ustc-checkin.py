@@ -79,6 +79,7 @@ data = {
     "last_touch_sars_date": "",
     "last_touch_sars_detail": "",
     "is_danger": "0",
+    "is_goto_danger": "0",
     "other_detail": "\uFFFD",
     # https://twitter.com/tenderlove/status/722565868719177729
 }
