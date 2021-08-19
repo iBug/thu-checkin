@@ -4,4 +4,4 @@ After=network.target network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /root/ustc-checkin.py
+ExecStart=/usr/bin/python3 /root/thu-checkin.py

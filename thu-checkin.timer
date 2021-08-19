@@ -2,8 +2,8 @@
 Description=Tsinghua University Daily Checkin Timer
 
 [Timer]
-OnCalendar=*-*-* 10:00
-RandomizedDelaySec=8h
+OnCalendar=*-*-* 8:00
+RandomizedDelaySec=3h
 Persistent=true
 
 [Install]
