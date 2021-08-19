@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
+import io
 import os
+import PIL
+import pytesseract
 import re
 import requests
 
@@ -30,6 +33,7 @@ now_status = "2" if is_inschool == "0" else "1"
 
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
+CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
@@ -41,17 +45,33 @@ retries = Retry(total=5,
 
 s = requests.Session()
 s.mount("https://", HTTPAdapter(max_retries=retries))
-s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36"
-s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
+s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67"
+r = s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
+x = re.search(r"""<input.*?name="CAS_LT".*?>""", r.text).group(0)
+cas_lt = re.search(r'value="(LT-\w*)"', x).group(1)
+
+r = s.get(CAS_CAPTCHA_URL)
+img = PIL.Image.open(io.BytesIO(r.content))
+pix = img.load()
+for i in range(img.size[0]):
+    for j in range(img.size[1]):
+        r, g, b = pix[i, j]
+        if g >= 46 and g < 132 and g >= r + 15 and g >= b + 10:
+            pix[i, j] = (0, 0, 0)
+        else:
+            pix[i, j] = (255, 255, 255)
+lt_code = pytesseract.image_to_string(img).strip()
 
 data = {
     "model": "uplogin.jsp",
     "service": CAS_RETURN_URL,
     "warn": "",
-    "showCode": "",
+    "showCode": "1",
     "username": username,
     "password": password,
     "button": "",
+    "CAS_LT": cas_lt,
+    "LT": lt_code,
 }
 r = s.post(CAS_LOGIN_URL, data=data)
 
