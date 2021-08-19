@@ -4,4 +4,4 @@ After=network.target network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh /home/ubuntu/ustc-checkin/run.sh
+ExecStart=/bin/sh /home/ubuntu/thu-checkin/run.sh

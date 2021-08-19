@@ -7,13 +7,13 @@
 
 用法：
 
-- 将 `ustc-checkin.py` 复制到 `/root` 目录下
-- 将 `ustc-checkin.service` 和 `ustc-checkin.timer` 复制到 `/etc/systemd/system` 目录下，并执行 `systemctl daemon-reload` 和 `systemctl enable --now ustc-checkin.timer`
-- 在 `/root` 目录下创建 [`ustc-checkin.txt` 文件](ustc-checkin.example.txt)，填入以下内容：
+- 将 `thu-checkin.py` 复制到 `/root` 目录下
+- 将 `thu-checkin.service` 和 `thu-checkin.timer` 复制到 `/etc/systemd/system` 目录下，并执行 `systemctl daemon-reload` 和 `systemctl enable --now thu-checkin.timer`
+- 在 `/root` 目录下创建 [`thu-checkin.txt` 文件](thu-checkin.example.txt)，填入以下内容：
 
     ```ini
-    USERNAME=你的CAS登录学号
-    PASSWORD=你的CAS登录密码
+    USERNAME=清华大学用户电子身份服务系统（即 CAS）学号
+    PASSWORD=清华大学用户电子身份服务系统（即 CAS）密码
     PROVINCE=省份代号
     CITY=城市代号
     COUNTRY=区县代号
@@ -38,9 +38,11 @@
 
     默认为 2，即东区。该项目仅当省份城市为安徽合肥（340000 + 340100）时会填报。
 
-本套件默认在每天 10:00 至 18:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `ustc-checkin.timer` 文件设置打卡时间。
+本套件默认在北京时间每天 8:00 至 11:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `thu-checkin.timer` 文件设置打卡时间。
 
-你可以使用 `systemctl status ustc-checkin.timer` 查看打卡记录和下次打卡时间。
+你可以使用 `systemctl status thu-checkin.timer` 查看打卡记录和下次打卡时间。
+
+如果你有其他需求，例如打卡结果自动通知等，请自行修改 Python 程序实现。提示：仓库里的 Python 文件末尾已经有判断打卡成功的代码了。
 
 ## 许可
 
