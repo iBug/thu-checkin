@@ -56,7 +56,7 @@ pix = img.load()
 for i in range(img.size[0]):
     for j in range(img.size[1]):
         r, g, b = pix[i, j]
-        if g >= 46 and g < 132 and g >= r + 15 and g >= b + 10:
+        if g >= 40 and r < 80:
             pix[i, j] = (0, 0, 0)
         else:
             pix[i, j] = (255, 255, 255)
