@@ -7,6 +7,7 @@
   - Ubuntu 和 Debian 可以直接使用 `apt install tesseract-ocr` 安装，其他发行版请自行解决安装问题
 - Python 3，并且安装了一些库：
   - requests（可以直接安装系统软件源提供的 `python3-requests` 包，也可以从 PyPI 安装，没有区别）
+  - pillow（`apt install python3-pil` 或 `pip3 install pillow`）
   - pytesseract
 
 用法：
@@ -47,6 +48,10 @@
 你可以使用 `systemctl status thu-checkin.timer` 查看打卡记录和下次打卡时间。
 
 如果你有其他需求，例如打卡结果自动通知等，请自行修改 Python 程序实现。提示：仓库里的 Python 文件末尾已经有判断打卡成功的代码了。
+
+## Docker 方式
+
+请参考 [Dockerfile](Dockerfile) 和 [`run.sh`](run.sh) 自行配置。
 
 ## 许可
 
