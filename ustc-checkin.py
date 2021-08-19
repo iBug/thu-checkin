@@ -80,6 +80,9 @@ data = {
     "last_touch_sars_detail": "",
     "is_danger": "0",
     "is_goto_danger": "0",
+    "jinji_lxr": "\uFFFD",
+    "jinji_guanxi": "\uFFFD",
+    "jiji_mobile": "\uFFFD",
     "other_detail": "\uFFFD",
     # https://twitter.com/tenderlove/status/722565868719177729
 }
