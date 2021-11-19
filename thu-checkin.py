@@ -37,7 +37,8 @@ CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
-
+Weekly_APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
+Weekly_REPORT_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/post"
 
 retries = Retry(total=5,
                 backoff_factor=0.5,
@@ -78,6 +79,27 @@ r = s.post(CAS_LOGIN_URL, data=data)
 # Parse the "_token" key out
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
 token = re.search(r'value="(\w*)"', x).group(1)
+
+r = s.get(Weekly_APPLY_URL, allow_redirects=False)
+if (r.status_code == 200):
+    x = re.search(r"""<.*你的当前状态.*>""", r.text).group(0)
+    now_stat = re.search(r'你的当前状态：(\w*)，', x).group(1)
+    if (now_stat != '在校已出校报备'):
+        x = re.search(r"""<input.*?name="start_date".*?>""", r.text).group(0)
+        start_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
+        x = re.search(r"""<input.*?name="end_date".*?>""", r.text).group(0)
+        end_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
+
+        REPORT_DATA = {
+            '_token': token,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+        r = s.post(Weekly_REPORT_URL, data=REPORT_DATA)
+elif(r.status_code == 302):
+    pass
+else:
+    print("Painc: Err weekly report.")
 
 data = {
     "_token": token,
