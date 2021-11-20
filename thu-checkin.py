@@ -80,26 +80,6 @@ r = s.post(CAS_LOGIN_URL, data=data)
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
 token = re.search(r'value="(\w*)"', x).group(1)
 
-r = s.get(Weekly_APPLY_URL, allow_redirects=False)
-if (r.status_code == 200):
-    x = re.search(r"""<.*你的当前状态.*>""", r.text).group(0)
-    now_stat = re.search(r'你的当前状态：(\w*)，', x).group(1)
-    if (now_stat != '在校已出校报备'):
-        x = re.search(r"""<input.*?name="start_date".*?>""", r.text).group(0)
-        start_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
-        x = re.search(r"""<input.*?name="end_date".*?>""", r.text).group(0)
-        end_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
-
-        REPORT_DATA = {
-            '_token': token,
-            'start_date': start_date,
-            'end_date': end_date
-        }
-        r = s.post(Weekly_REPORT_URL, data=REPORT_DATA)
-elif(r.status_code == 302):
-    pass
-else:
-    print("Painc: Err weekly report.")
 
 data = {
     "_token": token,
@@ -137,6 +117,28 @@ r = s.post(REPORT_URL, data=data)
 
 # Fail if not 200
 r.raise_for_status()
+
+if data["is_inschool"] == is_inschool:
+    r = s.get(Weekly_APPLY_URL, allow_redirects=False)
+    if (r.status_code == 200):
+        x = re.search(r"""<.*你的当前状态.*>""", r.text).group(0)
+        now_stat = re.search(r'你的当前状态：(\w*)，', x).group(1)
+        if (now_stat != '在校已出校报备'):
+            x = re.search(r"""<input.*?name="start_date".*?>""", r.text).group(0)
+            start_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
+            x = re.search(r"""<input.*?name="end_date".*?>""", r.text).group(0)
+            end_date = re.search(r'value="(\d{4}-\d{2}-\d{2})"', x).group(1)
+
+            REPORT_DATA = {
+                '_token': token,
+                'start_date': start_date,
+                'end_date': end_date
+            }
+            r = s.post(Weekly_REPORT_URL, data=REPORT_DATA)
+    elif(r.status_code == 302):
+        pass
+    else:
+        print("Painc: Err weekly report.")
 
 # Fail if not reported
 assert r.text.find("上报成功") >= 0
