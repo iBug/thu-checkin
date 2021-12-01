@@ -124,7 +124,7 @@ assert r.text.find("上报成功") >= 0
 
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
-if r.text.find("在校已出校报备") != -1:
+if "is_inschool" in data and r.text.find("在校已出校报备") != -1:
     x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
     token = re.search(r'value="(\w*)"', x).group(1)
     now = datetime.datetime.now()
