@@ -124,17 +124,18 @@ assert r.text.find("上报成功") >= 0
 
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
-x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
-token = re.search(r'value="(\w*)"', x).group(1)
-now = datetime.datetime.now()
-start_date = now.strftime("%Y-%m-%d")
-end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
-payload = {
-    "_token": token,
-    "start_date": start_date,
-    "end_date": end_date,
-}
-r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
+if r.text.find("在校已出校报备") != -1:
+    x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
+    token = re.search(r'value="(\w*)"', x).group(1)
+    now = datetime.datetime.now()
+    start_date = now.strftime("%Y-%m-%d")
+    end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+    payload = {
+        "_token": token,
+        "start_date": start_date,
+        "end_date": end_date,
+    }
+    r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
 
-# Fail if not applied
-assert r.text.find("报备成功") >= 0
+    # Fail if not applied
+    assert r.text.find("报备成功") >= 0
