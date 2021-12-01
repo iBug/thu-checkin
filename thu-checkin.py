@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import datetime
 import hashlib
 import hmac
 import io
@@ -134,4 +135,17 @@ headers = {
     "X-Hub-Signature": f"sha1={signature}",
 }
 r = requests.post(post_url, headers=headers, data=payload)
-#print("Notification:", r.status_code)
+
+# Now apply for outgoing
+r = s.get(APPLY_URL)
+x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
+token = re.search(r'value="(\w*)"', x).group(1)
+now = datetime.datetime.now()
+start_date = now.strftime("%Y-%m-%d")
+end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+payload = {
+    "_token": token,
+    "start_date": start_date,
+    "end_date": end_date,
+}
+r = s.post(APPLY_POST_URL, json=payload)
