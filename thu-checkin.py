@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import datetime
 import io
 import os
 import PIL
@@ -37,6 +38,8 @@ CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
+WEEKLY_APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
+WEEKLY_APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/post"
 
 
 retries = Retry(total=5,
@@ -118,3 +121,20 @@ r.raise_for_status()
 
 # Fail if not reported
 assert r.text.find("上报成功") >= 0
+
+# Now apply for outgoing
+r = s.get(WEEKLY_APPLY_URL)
+x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
+token = re.search(r'value="(\w*)"', x).group(1)
+now = datetime.datetime.now()
+start_date = now.strftime("%Y-%m-%d")
+end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+payload = {
+    "_token": token,
+    "start_date": start_date,
+    "end_date": end_date,
+}
+r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
+
+# Fail if not applied
+assert r.text.find("报备成功") >= 0
