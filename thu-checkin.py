@@ -28,6 +28,8 @@ province = data['PROVINCE']
 city = data["CITY"]
 country = data["COUNTRY"]
 is_inschool = data.get("IS_INSCHOOL", "2")
+lived = data.get("LIVED", "2")
+reason = data.get("REASON", "3")
 
 # 1: 在校园内, 2: 正常在家
 now_status = "2" if is_inschool == "0" else "1"
@@ -132,8 +134,8 @@ if "is_inschool" in data and r.text.find("在校已出校报备") == -1:
     end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
     payload = {
         "_token": token,
-        "start_date": start_date,
-        "end_date": end_date,
+        "lived": lived,
+        "reason": reason,
     }
     r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
 
