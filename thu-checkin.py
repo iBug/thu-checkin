@@ -24,16 +24,9 @@ with open(os.path.join(dirname, "thu-checkin.txt"), "r") as f:
 
 username = data["USERNAME"]
 password = data["PASSWORD"]
-province = data['PROVINCE']
-city = data["CITY"]
-country = data["COUNTRY"]
-is_inschool = data.get("IS_INSCHOOL", "2")
+juzhudi = data['JUZHUDI']
 lived = data.get("LIVED", "2")
 reason = data.get("REASON", "3")
-
-# 1: 在校园内, 2: 正常在家
-now_status = "2" if is_inschool == "0" else "1"
-
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
 CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
@@ -86,18 +79,10 @@ token = re.search(r'value="(\w*)"', x).group(1)
 
 data = {
     "_token": token,
-    "now_address": "1",
-    "gps_now_address": "",
-    "now_province": province,
-    "gps_province": "",
-    "now_city": city,
-    "gps_city": "",
-    "now_country": country,
-    "gps_country": "",
-    "now_detail": "",
+    "juzhudi": juzhudi,
     "body_condition": "1",
     "body_condition_detail": "",
-    "now_status": now_status,
+    "now_status": "1",
     "now_status_detail": "",
     "has_fever": "0",
     "last_touch_sars": "0",
@@ -111,10 +96,6 @@ data = {
     "other_detail": "\uFFFD",
     # https://twitter.com/tenderlove/status/722565868719177729
 }
-
-# Set "in_school" only when located in the right city
-if province == "340000" and city == "340100":
-    data["is_inschool"] = is_inschool
 
 r = s.post(REPORT_URL, data=data)
 
