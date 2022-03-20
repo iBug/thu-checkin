@@ -1,6 +1,8 @@
 # 清华大学每日健康打卡 systemd 版
 
-环境要求：
+推荐点击右上角的 Star 和 Watch 关注本仓库，以及时获知最新更新。
+
+## 环境要求
 
 - 一个 24 小时开机的 Linux 操作系统（需要使用 systemd，如 Ubuntu 18.04, Debian Stretch, CentOS 7, Fedora 等，树莓派也行）
 - Tesseract
@@ -10,15 +12,15 @@
   - pillow（`apt install python3-pil` 或 `pip3 install pillow`）
   - pytesseract
 
-用法：
+## 使用方法
 
 - 将 `thu-checkin.py` 复制到 `/root` 目录下
 - 将 `thu-checkin.service` 和 `thu-checkin.timer` 复制到 `/etc/systemd/system` 目录下，并执行 `systemctl daemon-reload` 和 `systemctl enable --now thu-checkin.timer`
 - 在 `/root` 目录下创建 [`thu-checkin.txt` 文件](thu-checkin.example.txt)，填入以下内容：
 
     ```ini
-    USERNAME=清华大学用户电子身份服务系统（即 CAS）学号
-    PASSWORD=清华大学用户电子身份服务系统（即 CAS）密码
+    USERNAME=清华大学用户电子身份服务系统学号
+    PASSWORD=清华大学用户电子身份服务系统密码
     JUZHUDI=居住地
     LIVED=现居地
     REASON=出校原因
@@ -64,7 +66,7 @@
 
 如果你有其他需求，例如打卡结果自动通知等，请自行修改 Python 程序实现。提示：仓库里的 Python 文件末尾已经有判断打卡成功的代码了。
 
-## Docker 方式
+### Docker 方式
 
 请参考 [Dockerfile](Dockerfile) 和 [`run.sh`](run.sh) 自行配置。
 
