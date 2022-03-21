@@ -24,8 +24,9 @@ with open(os.path.join(dirname, "thu-checkin.txt"), "r") as f:
 
 username = data["USERNAME"]
 password = data["PASSWORD"]
-juzhudi = data['JUZHUDI']
-reason = data.get("REASON", "3")
+juzhudi = data["JUZHUDI"]
+reason = data["REASON"]
+return_college = data["RETURN_COLLEGE"]
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
 CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
@@ -107,7 +108,7 @@ assert r.text.find("上报成功") >= 0
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
 r = s.get(WEEKLY_APPLY_URL, params={"t": reason}
-if "is_inschool" in data:
+if True:
     x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
     token = re.search(r'value="(\w*)"', x).group(1)
     now = datetime.datetime.now()
@@ -118,8 +119,9 @@ if "is_inschool" in data:
         "start_date": start_date,
         "end_date": end_date,
         "t": reason,
+        "return_college[]": return_college.split(),
     }
-    r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
+    r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
 
     # Fail if not applied
     assert r.text.find("报备成功") >= 0
