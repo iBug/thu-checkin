@@ -25,7 +25,6 @@ with open(os.path.join(dirname, "thu-checkin.txt"), "r") as f:
 username = data["USERNAME"]
 password = data["PASSWORD"]
 juzhudi = data['JUZHUDI']
-lived = data.get("LIVED", "2")
 reason = data.get("REASON", "3")
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
@@ -107,18 +106,18 @@ assert r.text.find("上报成功") >= 0
 
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
-r = s.get(WEEKLY_APPLY_URL, params={"t": f"{lived}{reason}"})
+r = s.get(WEEKLY_APPLY_URL, params={"t": reason}
 if "is_inschool" in data:
     x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
     token = re.search(r'value="(\w*)"', x).group(1)
     now = datetime.datetime.now()
     start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-    end_date = (now + datetime.timedelta(days=1)).strftime("%Y-%m-%d 23:59:59")
+    end_date = (now + datetime.timedelta(days=0)).strftime("%Y-%m-%d 23:59:59")
     payload = {
         "_token": token,
         "start_date": start_date,
         "end_date": end_date,
-        "t": f"{lived}{reason}",
+        "t": reason,
     }
     r = s.post(WEEKLY_APPLY_POST_URL, json=payload)
 
