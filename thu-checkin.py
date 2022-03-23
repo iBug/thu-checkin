@@ -107,7 +107,7 @@ assert r.text.find("上报成功") >= 0
 
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
-r = s.get(WEEKLY_APPLY_URL, params={"t": reason}
+r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
 if True:
     x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
     token = re.search(r'value="(\w*)"', x).group(1)
