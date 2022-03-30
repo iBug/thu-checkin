@@ -1,8 +1,6 @@
+[thu-checkin]
 USERNAME=PB00114514
 PASSWORD=password
-PROVINCE=340000
-CITY=340100
-COUNTRY=340104
-IS_INSCHOOL=2
+JUZHUDI=西校区
 HMAC_SECRET=helloworld
 POST_URL=https://api.example.com/myNotificationApi

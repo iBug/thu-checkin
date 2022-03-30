@@ -1,7 +1,10 @@
 [Unit]
 Description=Tsinghua University Daily Checkin Service
 After=network.target network-online.target
+StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
 ExecStart=/bin/sh /home/ubuntu/thu-checkin/run.sh
+Restart=on-failure
+RestartSec=1

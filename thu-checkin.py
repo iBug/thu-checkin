@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import configparser
 import datetime
 import hashlib
 import hmac
@@ -10,6 +11,7 @@ import PIL
 import pytesseract
 import re
 import requests
+import threading
 import time
 
 # https://stackoverflow.com/a/35504626/5958455
@@ -19,23 +21,14 @@ from requests.adapters import HTTPAdapter
 
 print("Tsinghua University Daily Health Report")
 dirname = os.path.dirname(os.path.realpath(__file__))
-data = {}
-with open(os.path.join(dirname, "data.txt"), "r") as f:
-    for line in f:
-        k, v = line.strip().split('=', 1)
-        data[k] = v
+config = configparser.ConfigParser()
+config.read(os.path.join(dirname, "data.txt"))
+data = config["thu-checkin"]
 
 username = data["USERNAME"]
 password = data["PASSWORD"]
-province = data['PROVINCE']
-city = data["CITY"]
-country = data["COUNTRY"]
-is_inschool = data.get("IS_INSCHOOL", "2")
 hmac_secret = data.get("HMAC_SECRET", "").encode()
 post_url = data.get("POST_URL")
-
-# 1: 在校园内, 2: 正常在家
-now_status = "2" if is_inschool == "0" else "1"
 
 
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
@@ -43,6 +36,8 @@ CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
+APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
+APPLY_POST_URL = f"{APPLY_URL}/post"
 more_headers = {"Referer": "https://passport.ustc.edu.cn/login?service=https%3A%2F%2Fweixine.ustc.edu.cn%2F2020%2Fcaslogin"}
 
 
@@ -63,7 +58,7 @@ pix = img.load()
 for i in range(img.size[0]):
     for j in range(img.size[1]):
         r, g, b = pix[i, j]
-        if g >= 46 and g < 132 and g >= r + 15 and g >= b + 10:
+        if g >= 40 and r < 80:
             pix[i, j] = (0, 0, 0)
         else:
             pix[i, j] = (255, 255, 255)
@@ -88,19 +83,12 @@ token = re.search(r'value="(\w*)"', x).group(1)
 
 data = {
     "_token": token,
-    "now_address": "1",
-    "gps_now_address": "",
-    "now_province": province,
-    "gps_province": "",
-    "now_city": city,
-    "gps_city": "",
-    "now_country": country,
-    "gps_country": "",
-    "now_detail": "",
-    "is_inschool": "6",
+    "juzhudi": "\uFFFD",
+    "dorm_building": "\uFFFD",
+    "dorm": "\uFFFD",
     "body_condition": "1",
     "body_condition_detail": "",
-    "now_status": now_status,
+    "now_status": "1",
     "now_status_detail": "",
     "has_fever": "0",
     "last_touch_sars": "0",
@@ -134,18 +122,29 @@ headers = {
     "X-GitHub-Event": "REDACTED",
     "X-Hub-Signature": f"sha1={signature}",
 }
-r = requests.post(post_url, headers=headers, data=payload)
+def notify(post_url, headers, payload):
+    r = requests.post(post_url, headers=headers, data=payload, timeout=5)
+    print("Notification:", r.status_code)
+th = threading.Thread(target=notify, args=(post_url, headers, payload))
+th.start()
 
 # Now apply for outgoing
-r = s.get(APPLY_URL)
+s.get(APPLY_URL)
+r = s.get(APPLY_URL, params={"t": "23"})
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
 token = re.search(r'value="(\w*)"', x).group(1)
 now = datetime.datetime.now()
-start_date = now.strftime("%Y-%m-%d")
-end_date = (now + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+start_date = now.strftime("%Y-%m-%d 00:00:00")
+end_date = (now + datetime.timedelta(days=0)).strftime("%Y-%m-%d 23:59:59")
 payload = {
     "_token": token,
     "start_date": start_date,
     "end_date": end_date,
+    "t": "3",
+    "return_college[]": "东校区 西校区 南校区 北校区 中校区 高新校区 先研院 国金院".split(),
 }
-r = s.post(APPLY_POST_URL, json=payload)
+r = s.post(APPLY_POST_URL, data=payload)
+with open(os.path.join(dirname, "last2.html"), "wb") as f:
+    f.write(r.content)
+
+th.join()
