@@ -65,7 +65,19 @@
 
 ### Docker 方式
 
-请参考 [Dockerfile](Dockerfile) 和 [`run.sh`](run.sh) 自行配置。
+在仓库目录中构建 Docker 镜像：
+
+```shell
+docker build -t checkin:latest .
+```
+
+使用 `run.sh` 运行：
+
+```shell
+./run.sh
+```
+
+详细信息请参考 [Dockerfile](Dockerfile) 和 [`run.sh`](run.sh)。
 
 ## 许可
 
