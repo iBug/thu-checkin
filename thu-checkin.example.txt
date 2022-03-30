@@ -3,3 +3,5 @@ PASSWORD=password
 JUZHUDI=东校区
 REASON=3
 RETURN_COLLEGE=东校区 西校区 南校区 北校区 中校区
+DORM_BUILDING=#114
+DORM=514

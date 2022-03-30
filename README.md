@@ -24,6 +24,8 @@
     JUZHUDI=居住地
     REASON=出校原因
     RETURN_COLLEGE=进出校区
+    DORM_BUILDING=宿舍楼
+    DORM=宿舍
     ```
 
     其中居住地 `JUZHUDI` 直接填写文字，可选的取值为：
