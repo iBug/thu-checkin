@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import configparser
 import datetime
 import io
 import os
@@ -16,11 +17,9 @@ from requests.adapters import HTTPAdapter
 print("Tsinghua University Daily Health Report")
 
 dirname = os.path.dirname(os.path.realpath(__file__))
-data = {}
-with open(os.path.join(dirname, "thu-checkin.txt"), "r") as f:
-    for line in f:
-        k, v = line.strip().split('=', 1)
-        data[k] = v
+config = configparser.ConfigParser()
+config.read(os.path.join(dirname, "thu-checkin.txt"))
+data = config["thu-checkin"]
 
 username = data["USERNAME"]
 password = data["PASSWORD"]

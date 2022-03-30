@@ -19,6 +19,7 @@
 - 在 `/root` 目录下创建 [`thu-checkin.txt` 文件](thu-checkin.example.txt)，填入以下内容：
 
     ```ini
+    [thu-checkin]
     USERNAME=清华大学用户电子身份服务系统学号
     PASSWORD=清华大学用户电子身份服务系统密码
     JUZHUDI=居住地
@@ -53,6 +54,8 @@
     请根据实际情况选择一个合适的取值，一般来说根据你的现居地选择 3 或者 4 即可。
 
     进出校区 `RETURN_COLLEGE` 为一个或多个校区名称，用空格分隔。推荐将所有校区都写上（见 example 文件）。
+
+    宿舍楼 `DORM_BUILDING` 和宿舍 `DORM` 直接填写文字。
 
 本套件默认在系统本地时间每天 8:00 至 11:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `thu-checkin.timer` 文件设置打卡时间。
 

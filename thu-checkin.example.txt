@@ -1,3 +1,4 @@
+[thu-checkin]
 USERNAME=PB00114514
 PASSWORD=password
 JUZHUDI=东校区
