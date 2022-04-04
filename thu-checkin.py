@@ -27,6 +27,7 @@ password = data["PASSWORD"]
 juzhudi = data["JUZHUDI"]
 reason = data["REASON"]
 return_college = data["RETURN_COLLEGE"]
+reason_text = data["REASON_TEXT"]
 dorm_building = data["DORM_BUILDING"]
 dorm = data["DORM"]
 
@@ -132,6 +133,7 @@ payload = {
     "end_date": end_date,
     "t": reason,
     "return_college[]": return_college.split(),
+    "reason": reason_text,
 }
 r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
 

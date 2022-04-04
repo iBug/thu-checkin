@@ -23,9 +23,9 @@
     USERNAME=清华大学用户电子身份服务系统学号
     PASSWORD=清华大学用户电子身份服务系统密码
     JUZHUDI=居住地
-    REASON=出校原因
+    REASON=进出校原因
     RETURN_COLLEGE=进出校区
-    RETURN_REASON=出校原因（文字）
+    RETURN_REASON=跨校区原因
     DORM_BUILDING=宿舍楼
     DORM=宿舍
 
@@ -50,7 +50,7 @@
     - 合肥市内校外
     - 合肥市外校区
 
-    出校原因 `REASON` 的取值为：
+    进出校原因 `REASON` 的取值为：
 
     | 值 | 含义                                                 |
     | -- | ---------------------------------------------------- |
