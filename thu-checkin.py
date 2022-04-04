@@ -3,6 +3,7 @@
 import configparser
 import datetime
 import io
+import mimetypes
 import os
 import PIL
 import pytesseract
@@ -36,6 +37,14 @@ REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 WEEKLY_APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
 WEEKLY_APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/post"
+
+UPLOAD_PAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/xcm"
+UPLOAD_IMAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/{}/image"
+UPLOAD_INFO = [
+    (1, "14-day Big Data Trace Card"),
+    (2, "An Kang code"),
+    (3, "Weekly nucleic acid test result"),
+]
 
 
 retries = Retry(total=5,
@@ -108,6 +117,7 @@ r.raise_for_status()
 # Fail if not reported
 assert r.text.find("上报成功") >= 0
 
+
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
 r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
@@ -127,3 +137,32 @@ r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
 
 # Fail if not applied
 assert r.text.find("报备成功") >= 0
+
+
+# Now upload images
+for idx, description in UPLOAD_INFO:
+    path = data.get(f"IMAGE_{idx}")
+    # Skip if not specified or not found
+    if not path or not os.path.isfile(path):
+        print(f"Skipping upload of {description}")
+        continue
+    print(f"Uploading {description}")
+    with open(path, "rb") as f:
+        blob = f.read()
+    r = s.get(UPLOAD_PAGE_URL)
+    x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
+    token = re.search(r'value="(\w*)"', x).group(1)
+    url = UPLOAD_IMAGE_URL.format(idx)
+    payload = {
+        "_token": token,
+        "id": f"WU_FILE_{idx}",
+        "name": os.path.basename(path),
+        "type": mimetypes.guess_type(path)[0],
+        "lastModifiedDate": datetime.datetime.now()
+            .strftime("%a %b %d %Y %H:%M:%S GMT+0800 (China Standard Time)"),
+        "size": f"{len(blob)}",
+    }
+    payload_files = {"file": (payload["name"], blob)}
+    r = s.post(url, data=payload, files=payload_files)
+    r.raise_for_status()
+    print(r.json()["status"])

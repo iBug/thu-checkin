@@ -4,5 +4,13 @@ PASSWORD=password
 JUZHUDI=东校区
 REASON=3
 RETURN_COLLEGE=东校区 西校区 南校区 北校区 中校区 高新校区 先研院 国金院
+RETURN_REASON=今天天气晴朗
 DORM_BUILDING=#114
 DORM=514
+
+# 14-day Big Data Trace Card
+IMAGE_1=images/1.jpg
+# An Kang code
+IMAGE_2=images/2.jpg
+# Weekly nucleic acid test result
+IMAGE_3=images/3.jpg

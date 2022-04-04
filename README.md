@@ -25,8 +25,16 @@
     JUZHUDI=居住地
     REASON=出校原因
     RETURN_COLLEGE=进出校区
+    RETURN_REASON=出校原因（文字）
     DORM_BUILDING=宿舍楼
     DORM=宿舍
+
+    # 大数据行程🐎
+    IMAGE_1=/path/to/1.jpg
+    # 北京健康宝
+    IMAGE_2=/path/to/2.jpg
+    # 核酸报告
+    IMAGE_3=/path/to/3.jpg
     ```
 
     其中居住地 `JUZHUDI` 直接填写文字，可选的取值为：
@@ -56,6 +64,8 @@
     进出校区 `RETURN_COLLEGE` 为一个或多个校区名称，用空格分隔。推荐将所有校区都写上（见 example 文件）。
 
     宿舍楼 `DORM_BUILDING` 和宿舍 `DORM` 直接填写文字。
+
+    上传图片 `IMAGE_1`、`IMAGE_2`、`IMAGE_3` 填写文件路径。若未填写或者指定的路径不存在，则该张图片会被跳过。
 
 本套件默认在系统本地时间每天 8:00 至 11:00 之间随机选择一个时间打卡一次，请确保你的系统时钟和时区设置是正确的，或者自行编辑 `thu-checkin.timer` 文件设置打卡时间。
 
