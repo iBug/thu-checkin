@@ -165,4 +165,4 @@ for idx, description in UPLOAD_INFO:
     payload_files = {"file": (payload["name"], blob)}
     r = s.post(url, data=payload, files=payload_files)
     r.raise_for_status()
-    print(r.json()["status"])
+    print(f"Uploaded {description}: {r.json()['status']}")
