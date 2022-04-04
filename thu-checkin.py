@@ -61,7 +61,7 @@ for i in range(img.size[0]):
             pix[i, j] = (255, 255, 255)
 lt_code = pytesseract.image_to_string(img).strip()
 
-data = {
+payload = {
     "model": "uplogin.jsp",
     "service": CAS_RETURN_URL,
     "warn": "",
@@ -72,13 +72,13 @@ data = {
     "CAS_LT": cas_lt,
     "LT": lt_code,
 }
-r = s.post(CAS_LOGIN_URL, data=data)
+r = s.post(CAS_LOGIN_URL, data=payload)
 
 # Parse the "_token" key out
 x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
 token = re.search(r'value="(\w*)"', x).group(1)
 
-data = {
+payload = {
     "_token": token,
     "juzhudi": juzhudi,
     "dorm_building": dorm_building,
@@ -100,7 +100,7 @@ data = {
     # https://twitter.com/tenderlove/status/722565868719177729
 }
 
-r = s.post(REPORT_URL, data=data)
+r = s.post(REPORT_URL, data=payload)
 
 # Fail if not 200
 r.raise_for_status()
