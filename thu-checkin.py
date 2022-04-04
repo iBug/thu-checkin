@@ -111,20 +111,19 @@ assert r.text.find("上报成功") >= 0
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
 r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
-if True:
-    x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
-    token = re.search(r'value="(\w*)"', x).group(1)
-    now = datetime.datetime.now()
-    start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-    end_date = (now + datetime.timedelta(days=0)).strftime("%Y-%m-%d 23:59:59")
-    payload = {
-        "_token": token,
-        "start_date": start_date,
-        "end_date": end_date,
-        "t": reason,
-        "return_college[]": return_college.split(),
-    }
-    r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
+x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
+token = re.search(r'value="(\w*)"', x).group(1)
+now = datetime.datetime.now()
+start_date = now.strftime("%Y-%m-%d %H:%M:%S")
+end_date = (now + datetime.timedelta(days=0)).strftime("%Y-%m-%d 23:59:59")
+payload = {
+    "_token": token,
+    "start_date": start_date,
+    "end_date": end_date,
+    "t": reason,
+    "return_college[]": return_college.split(),
+}
+r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
 
-    # Fail if not applied
-    assert r.text.find("报备成功") >= 0
+# Fail if not applied
+assert r.text.find("报备成功") >= 0
