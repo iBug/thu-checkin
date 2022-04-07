@@ -5,6 +5,7 @@ RUN sed -Ei 's/(deb|security)\.debian\.org/mirrors.ustc.edu.cn/g' /etc/apt/sourc
     apt-get update && \
     apt-get install -y --no-install-recommends tesseract-ocr && \
     apt-get clean && \
+    rm -rf /var/lib/apt/lists && \
     ln -sfn /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure tzdata && \
     pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
