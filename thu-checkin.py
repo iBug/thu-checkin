@@ -24,7 +24,6 @@ data = config["thu-checkin"]
 
 username = data["USERNAME"]
 password = data["PASSWORD"]
-juzhudi = data["JUZHUDI"]
 reason = data["REASON"]
 return_college = data["RETURN_COLLEGE"]
 reason_text = data["REASON_TEXT"]
@@ -96,7 +95,7 @@ def checkin(s: requests.Session) -> bool:
     r = s.get(HOME_URL)
     payload = {
         "_token": parse_token(r.text),
-        "juzhudi": juzhudi,
+        "juzhudi": "\uFFFD",
         "dorm_building": dorm_building,
         "dorm": dorm,
         "body_condition": "1",

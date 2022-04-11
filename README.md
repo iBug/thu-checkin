@@ -22,7 +22,6 @@
     [thu-checkin]
     USERNAME=清华大学用户电子身份服务系统学号
     PASSWORD=清华大学用户电子身份服务系统密码
-    JUZHUDI=居住地
     REASON=进出校原因
     RETURN_COLLEGE=进出校区
     RETURN_REASON=跨校区原因
@@ -36,19 +35,6 @@
     # 核酸报告
     IMAGE_3=/path/to/3.jpg
     ```
-
-    其中居住地 `JUZHUDI` 直接填写文字，可选的取值为：
-
-    - 东校区
-    - 西校区
-    - 南校区
-    - 北校区
-    - 中校区
-    - 高新校区
-    - 先研院
-    - 国金院
-    - 北京市内校外
-    - 北京市外校区
 
     进出校原因 `REASON` 的取值为：
 

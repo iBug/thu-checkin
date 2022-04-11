@@ -1,7 +1,6 @@
 [thu-checkin]
 USERNAME=PB00114514
 PASSWORD=password
-JUZHUDI=东校区
 REASON=3
 RETURN_COLLEGE=东校区 西校区 南校区 北校区 中校区 高新校区 先研院 国金院
 RETURN_REASON=今天天气晴朗
