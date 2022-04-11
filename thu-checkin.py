@@ -152,7 +152,7 @@ def upload_image(s: requests.Session, idx: str, description: str) -> bool:
     # Skip if not specified or not found
     if not path or not os.path.isfile(path):
         print(f"Skipping upload of {description}")
-        continue
+        return True
     print(f"Uploading {description}")
     with open(path, "rb") as f:
         blob = f.read()
