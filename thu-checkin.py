@@ -49,100 +49,105 @@ UPLOAD_INFO = [
 ]
 
 
-def parse_token(s):
+def parse_token(s: str) -> str:
     x = re.search(r"""<input.*?name="_token".*?>""", s).group(0)
     return re.search(r'value="(\w*)"', x).group(1)
 
 
-retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
-s = requests.Session()
-s.mount("https://", HTTPAdapter(max_retries=retries))
-s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67"
-
-r = s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
-cas_lt = re.search(r'<input.*?name="CAS_LT".*?value="(LT-\w*)".*?>', r.text).group(1)
-
-r = s.get(CAS_CAPTCHA_URL)
-img = PIL.Image.open(io.BytesIO(r.content))
-pix = img.load()
-for i in range(img.size[0]):
-    for j in range(img.size[1]):
-        r, g, b = pix[i, j]
-        if g >= 40 and r < 80:
-            pix[i, j] = (0, 0, 0)
-        else:
-            pix[i, j] = (255, 255, 255)
-lt_code = pytesseract.image_to_string(img).strip()
-
-payload = {
-    "model": "uplogin.jsp",
-    "service": CAS_RETURN_URL,
-    "warn": "",
-    "showCode": "1",
-    "username": username,
-    "password": password,
-    "button": "",
-    "CAS_LT": cas_lt,
-    "LT": lt_code,
-}
-r = s.post(CAS_LOGIN_URL, data=payload)
-
-r = s.get(HOME_URL)
-payload = {
-    "_token": parse_token(r.text),
-    "juzhudi": juzhudi,
-    "dorm_building": dorm_building,
-    "dorm": dorm,
-    "body_condition": "1",
-    "body_condition_detail": "",
-    "now_status": "1",
-    "now_status_detail": "",
-    "has_fever": "0",
-    "last_touch_sars": "0",
-    "last_touch_sars_date": "",
-    "last_touch_sars_detail": "",
-    "is_danger": "0",
-    "is_goto_danger": "0",
-    "jinji_lxr": "\uFFFD",
-    "jinji_guanxi": "\uFFFD",
-    "jiji_mobile": "\uFFFD",
-    "other_detail": "\uFFFD",
-    # https://twitter.com/tenderlove/status/722565868719177729
-}
-
-r = s.post(REPORT_URL, data=payload)
-
-# Fail if not 200
-r.raise_for_status()
-
-# Fail if not reported
-checkin_success = r.text.find("上报成功") >= 0
-assert checkin_success
+def make_session() -> requests.Session:
+    retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+    s = requests.Session()
+    s.mount("https://", HTTPAdapter(max_retries=retries))
+    s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67"
+    return s
 
 
-# Now apply for outgoing
-r = s.get(WEEKLY_APPLY_URL)
-r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
-now = datetime.datetime.now()
-start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-end_date = (now + datetime.timedelta(days=int(now.hour > 20))).strftime("%Y-%m-%d 23:59:59")
-payload = {
-    "_token": parse_token(r.text),
-    "start_date": start_date,
-    "end_date": end_date,
-    "t": reason,
-    "return_college[]": return_college.split(),
-    "reason": reason_text,
-}
-r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
+def login(s: requests.Session) -> requests.Response:
+    r = s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
+    cas_lt = re.search(r'<input.*?name="CAS_LT".*?value="(LT-\w*)".*?>', r.text).group(1)
 
-# Fail if not applied
-apply_success = r.text.find("报备成功") >= 0
-assert apply_success
+    r = s.get(CAS_CAPTCHA_URL)
+    img = PIL.Image.open(io.BytesIO(r.content))
+    pix = img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            r, g, b = pix[i, j]
+            if g >= 40 and r < 80:
+                pix[i, j] = (0, 0, 0)
+            else:
+                pix[i, j] = (255, 255, 255)
+    lt_code = pytesseract.image_to_string(img).strip()
+
+    payload = {
+        "model": "uplogin.jsp",
+        "service": CAS_RETURN_URL,
+        "warn": "",
+        "showCode": "1",
+        "username": username,
+        "password": password,
+        "button": "",
+        "CAS_LT": cas_lt,
+        "LT": lt_code,
+    }
+    return s.post(CAS_LOGIN_URL, data=payload)
 
 
-# Now upload images
-for idx, description in UPLOAD_INFO:
+def checkin(s: requests.Session) -> bool:
+    r = s.get(HOME_URL)
+    payload = {
+        "_token": parse_token(r.text),
+        "juzhudi": juzhudi,
+        "dorm_building": dorm_building,
+        "dorm": dorm,
+        "body_condition": "1",
+        "body_condition_detail": "",
+        "now_status": "1",
+        "now_status_detail": "",
+        "has_fever": "0",
+        "last_touch_sars": "0",
+        "last_touch_sars_date": "",
+        "last_touch_sars_detail": "",
+        "is_danger": "0",
+        "is_goto_danger": "0",
+        "jinji_lxr": "\uFFFD",
+        "jinji_guanxi": "\uFFFD",
+        "jiji_mobile": "\uFFFD",
+        "other_detail": "\uFFFD",
+        # https://twitter.com/tenderlove/status/722565868719177729
+    }
+
+    r = s.post(REPORT_URL, data=payload)
+
+    # Fail if not 200
+    r.raise_for_status()
+
+    # Fail if not reported
+    checkin_success = r.text.find("上报成功") >= 0
+    return checkin_success
+
+
+def apply(s: requests.Session) -> bool:
+    r = s.get(WEEKLY_APPLY_URL)
+    r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
+    now = datetime.datetime.now()
+    start_date = now.strftime("%Y-%m-%d %H:%M:%S")
+    end_date = (now + datetime.timedelta(days=int(now.hour > 20))).strftime("%Y-%m-%d 23:59:59")
+    payload = {
+        "_token": parse_token(r.text),
+        "start_date": start_date,
+        "end_date": end_date,
+        "t": reason,
+        "return_college[]": return_college.split(),
+        "reason": reason_text,
+    }
+    r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
+
+    # Fail if not applied
+    apply_success = r.text.find("报备成功") >= 0
+    return apply_success
+
+
+def upload_image(s: requests.Session, idx: str, description: str) -> bool:
     path = data.get(f"IMAGE_{idx}")
     # Skip if not specified or not found
     if not path or not os.path.isfile(path):
@@ -169,3 +174,13 @@ for idx, description in UPLOAD_INFO:
     r.raise_for_status()
     upload_success = r.json()['status']
     print(f"Uploaded {description}: {upload_success}")
+    return upload_success
+
+
+if __name__ == "__main__":
+    s = make_session()
+    login(s)
+    assert checkin(s)
+    for idx, description in UPLOAD_INFO:
+        upload_image(s, idx, description)
+    apply(s)
