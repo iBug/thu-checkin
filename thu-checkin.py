@@ -126,7 +126,7 @@ x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
 token = re.search(r'value="(\w*)"', x).group(1)
 now = datetime.datetime.now()
 start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-end_date = (now + datetime.timedelta(days=0)).strftime("%Y-%m-%d 23:59:59")
+end_date = (now + datetime.timedelta(days=int(now.hour > 20))).strftime("%Y-%m-%d 23:59:59")
 payload = {
     "_token": token,
     "start_date": start_date,
