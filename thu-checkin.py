@@ -34,6 +34,7 @@ dorm = data["DORM"]
 CAS_LOGIN_URL = "https://passport.ustc.edu.cn/login"
 CAS_CAPTCHA_URL = "https://passport.ustc.edu.cn/validatecode.jsp?type=login"
 CAS_RETURN_URL = "https://weixine.ustc.edu.cn/2020/caslogin"
+HOME_URL = "https://weixine.ustc.edu.cn/2020/home"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 WEEKLY_APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
@@ -48,16 +49,18 @@ UPLOAD_INFO = [
 ]
 
 
-retries = Retry(total=5,
-                backoff_factor=0.5,
-                status_forcelist=[500, 502, 503, 504])
+def parse_token(s):
+    x = re.search(r"""<input.*?name="_token".*?>""", s).group(0)
+    return re.search(r'value="(\w*)"', x).group(1)
 
+
+retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
 s = requests.Session()
 s.mount("https://", HTTPAdapter(max_retries=retries))
 s.headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67"
+
 r = s.get(CAS_LOGIN_URL, params={"service": CAS_RETURN_URL})
-x = re.search(r"""<input.*?name="CAS_LT".*?>""", r.text).group(0)
-cas_lt = re.search(r'value="(LT-\w*)"', x).group(1)
+cas_lt = re.search(r'<input.*?name="CAS_LT".*?value="(LT-\w*)".*?>', r.text).group(1)
 
 r = s.get(CAS_CAPTCHA_URL)
 img = PIL.Image.open(io.BytesIO(r.content))
@@ -84,12 +87,9 @@ payload = {
 }
 r = s.post(CAS_LOGIN_URL, data=payload)
 
-# Parse the "_token" key out
-x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
-token = re.search(r'value="(\w*)"', x).group(1)
-
+r = s.get(HOME_URL)
 payload = {
-    "_token": token,
+    "_token": parse_token(r.text),
     "juzhudi": juzhudi,
     "dorm_building": dorm_building,
     "dorm": dorm,
@@ -116,19 +116,18 @@ r = s.post(REPORT_URL, data=payload)
 r.raise_for_status()
 
 # Fail if not reported
-assert r.text.find("上报成功") >= 0
+checkin_success = r.text.find("上报成功") >= 0
+assert checkin_success
 
 
 # Now apply for outgoing
 r = s.get(WEEKLY_APPLY_URL)
 r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
-x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
-token = re.search(r'value="(\w*)"', x).group(1)
 now = datetime.datetime.now()
 start_date = now.strftime("%Y-%m-%d %H:%M:%S")
 end_date = (now + datetime.timedelta(days=int(now.hour > 20))).strftime("%Y-%m-%d 23:59:59")
 payload = {
-    "_token": token,
+    "_token": parse_token(r.text),
     "start_date": start_date,
     "end_date": end_date,
     "t": reason,
@@ -138,7 +137,8 @@ payload = {
 r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
 
 # Fail if not applied
-assert r.text.find("报备成功") >= 0
+apply_success = r.text.find("报备成功") >= 0
+assert apply_success
 
 
 # Now upload images
@@ -156,7 +156,7 @@ for idx, description in UPLOAD_INFO:
     token = re.search(r'value="(\w*)"', x).group(1)
     url = UPLOAD_IMAGE_URL.format(idx)
     payload = {
-        "_token": token,
+        "_token": parse_token(r.text),
         "id": f"WU_FILE_{idx}",
         "name": os.path.basename(path),
         "type": mimetypes.guess_type(path)[0],
@@ -167,4 +167,5 @@ for idx, description in UPLOAD_INFO:
     payload_files = {"file": (payload["name"], blob)}
     r = s.post(url, data=payload, files=payload_files)
     r.raise_for_status()
-    print(f"Uploaded {description}: {r.json()['status']}")
+    upload_success = r.json()['status']
+    print(f"Uploaded {description}: {upload_success}")
