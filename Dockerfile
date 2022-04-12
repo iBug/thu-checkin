@@ -1,7 +1,13 @@
-FROM python:3.9
+FROM python:3.10
 WORKDIR /srv
-RUN apt-get update && \
+ENV DEBIAN_FRONTEND=noninteractive TZ=Asia/Shanghai
+RUN sed -Ei 's/(deb|security)\.debian\.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list && \
+    apt-get update && \
     apt-get install -y --no-install-recommends tesseract-ocr && \
     apt-get clean && \
+    rm -rf /var/lib/apt/lists && \
+    ln -sfn /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure tzdata && \
+    pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
     pip3 install requests pillow pytesseract
-CMD ["python3", "checkin.py"]
+CMD ["python3", "thu-checkin.py"]

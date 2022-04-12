@@ -2,10 +2,6 @@
 
 cd "$(dirname "$0")"
 exec docker run --rm \
-  -v "$PWD/data.txt":/srv/data.txt:ro \
-  -v "$PWD/last.html":/srv/last.html:rw \
-  --network ustcnet \
-  --ip 127.0.114.514 \
-  --dns 202.38.64.1 \
-  --sysctl net.ipv6.conf.all.disable_ipv6=0 \
+  -v "$PWD/thu-checkin.txt":/srv/thu-checkin.txt:ro \
+  -v "$PWD/thu-checkin.py":/srv/thu-checkin.py:ro \
   checkin:latest
