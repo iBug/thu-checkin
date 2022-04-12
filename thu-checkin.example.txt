@@ -7,6 +7,9 @@ RETURN_REASON=今天天气晴朗
 DORM_BUILDING=#114
 DORM=514
 
+HMAC_SECRET=secret
+POST_URL=https://api.example.com/notification
+
 # 14-day Big Data Trace Card
 IMAGE_1=images/1.jpg
 # An Kang code

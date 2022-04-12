@@ -1,5 +1,13 @@
 #!/usr/bin/python3
 
+import atexit
+import hashlib
+import hmac
+import json
+import random
+import threading
+import time
+
 import configparser
 import datetime
 import io
@@ -9,6 +17,7 @@ import PIL
 import pytesseract
 import re
 import requests
+import sys
 
 # https://stackoverflow.com/a/35504626/5958455
 from urllib3.util.retry import Retry
@@ -116,6 +125,8 @@ def checkin(s: requests.Session) -> bool:
     }
 
     r = s.post(REPORT_URL, data=payload)
+    with open("last.html", "wb") as f:
+        f.write(r.content)
 
     # Fail if not 200
     r.raise_for_status()
@@ -140,6 +151,8 @@ def apply(s: requests.Session) -> bool:
         "reason": reason_text,
     }
     r = s.post(WEEKLY_APPLY_POST_URL, data=payload)
+    with open("last2.html", "wb") as f:
+        f.write(r.content)
 
     # Fail if not applied
     apply_success = r.text.find("报备成功") >= 0
@@ -155,6 +168,7 @@ def upload_image(s: requests.Session, idx: str, description: str) -> bool:
     print(f"Uploading {description}")
     with open(path, "rb") as f:
         blob = f.read()
+        blob += os.urandom(1 + os.urandom(1)[0])
     r = s.get(UPLOAD_PAGE_URL)
     x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
     token = re.search(r'value="(\w*)"', x).group(1)
@@ -176,10 +190,42 @@ def upload_image(s: requests.Session, idx: str, description: str) -> bool:
     return upload_success
 
 
+def send_notification(t: str, content: object):
+    payload = json.dumps({
+        "type": t,
+        "data": content,
+    })
+    print(f"Checkin result: {data}")
+    signature = hmac.new(data["HMAC_SECRET"].encode(), payload.encode("utf-8"), hashlib.sha1).hexdigest()
+    headers = {
+        "Content-Type": "application/json",
+        "X-GitHub-Event": "stub",
+        "X-Hub-Signature": f"sha1={signature}",
+    }
+    def notify(post_url, headers, payload):
+        r = requests.post(post_url, headers=headers, data=payload, timeout=5)
+        print("Notification:", r.status_code)
+    th = threading.Thread(target=notify, args=(data["POST_URL"], headers, payload))
+    th.start()
+    atexit.register(th.join)
+
+
 if __name__ == "__main__":
     s = make_session()
-    login(s)
-    assert checkin(s)
-    for idx, description in UPLOAD_INFO:
-        upload_image(s, idx, description)
-    apply(s)
+    results = [False] * 5
+    try:
+        login(s)
+        results[0] = checkin(s)
+        for idx, description in UPLOAD_INFO:
+            results[2 + idx] = upload_image(s, idx, description)
+        results[1] = apply(s)
+        send_notification("checkin", results)
+    except Exception:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.basename(exc_tb.tb_frame.f_code.co_filename)
+        payload = {
+            "message": f"{exc_type.__name__}: {exc_obj}",
+            "file": fname,
+            "lineno": exc_tb.tb_lineno,
+        }
+        send_notification("checkin-exception", payload)
