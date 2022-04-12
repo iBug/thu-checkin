@@ -170,8 +170,6 @@ def upload_image(s: requests.Session, idx: str, description: str) -> bool:
         blob = f.read()
         blob += os.urandom(1 + os.urandom(1)[0])
     r = s.get(UPLOAD_PAGE_URL)
-    x = re.search(r"""<input.*?name="_token".*?>""", r.text).group(0)
-    token = re.search(r'value="(\w*)"', x).group(1)
     url = UPLOAD_IMAGE_URL.format(idx)
     payload = {
         "_token": parse_token(r.text),
