@@ -193,7 +193,7 @@ def send_notification(t: str, content: object):
         "type": t,
         "data": content,
     })
-    print(f"Checkin result: {data}")
+    print(f"Checkin result: {content}")
     signature = hmac.new(data["HMAC_SECRET"].encode(), payload.encode("utf-8"), hashlib.sha1).hexdigest()
     headers = {
         "Content-Type": "application/json",
@@ -215,7 +215,7 @@ if __name__ == "__main__":
         login(s)
         results[0] = checkin(s)
         for idx, description in UPLOAD_INFO:
-            results[2 + idx] = upload_image(s, idx, description)
+            results[1 + idx] = upload_image(s, idx, description)
         results[1] = apply(s)
         send_notification("checkin", results)
     except Exception:
