@@ -37,10 +37,10 @@ HOME_URL = "https://weixine.ustc.edu.cn/2020/home"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 WEEKLY_APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
-WEEKLY_APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/post"
+WEEKLY_APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/ipost"
 
 UPLOAD_PAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/xcm"
-UPLOAD_IMAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/{}/image"
+UPLOAD_IMAGE_URL = "https://weixine.ustc.edu.cn/2020img/api/upload_for_student"
 UPLOAD_INFO = [
     (1, "14-day Big Data Trace Card"),
     (2, "An Kang code"),
@@ -156,9 +156,14 @@ def upload_image(s: requests.Session, idx: str, description: str) -> bool:
     with open(path, "rb") as f:
         blob = f.read()
     r = s.get(UPLOAD_PAGE_URL)
-    url = UPLOAD_IMAGE_URL.format(idx)
+    gid = re.search(r"'gid':\s*'(\d+)',", r.text).group(1)
+    sign = re.search(r"'sign':\s*'([\w+/]+)',", r.text).group(1)
+    url = UPLOAD_IMAGE_URL
     payload = {
         "_token": parse_token(r.text),
+        "gid": gid,
+        "t": str(idx),
+        "sign": sign,
         "id": f"WU_FILE_{idx}",
         "name": os.path.basename(path),
         "type": mimetypes.guess_type(path)[0],
