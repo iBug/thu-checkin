@@ -130,7 +130,7 @@ def apply(s: requests.Session) -> bool:
     r = s.get(WEEKLY_APPLY_URL, params={"t": reason})
     now = datetime.datetime.now()
     start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-    end_date = (now + datetime.timedelta(days=int(now.hour > 20))).strftime("%Y-%m-%d 23:59:59")
+    end_date = (now + datetime.timedelta(days=int(now.hour >= 20))).strftime("%Y-%m-%d 23:59:59")
     payload = {
         "_token": parse_token(r.text),
         "start_date": start_date,
