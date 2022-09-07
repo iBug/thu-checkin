@@ -39,7 +39,7 @@ HOME_URL = "https://weixine.ustc.edu.cn/2020/home"
 REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
-APPLY_POST_URL = "WEEKLY_https://weixine.ustc.edu.cn/2020/apply/daliy/ipost"
+APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/ipost"
 APPLY2_URL = "https://weixine.ustc.edu.cn/2020/stayinout_apply"
 
 UPLOAD_PAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/xcm"
