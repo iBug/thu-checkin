@@ -3,9 +3,14 @@ USERNAME=PB00114514
 PASSWORD=password
 REASON=3
 RETURN_COLLEGE=东校区 西校区 南校区 北校区 中校区 高新校区 先研院 国金院
-RETURN_REASON=今天天气晴朗
+REASON_TEXT=今天天气晴朗
 DORM_BUILDING=#114
 DORM=514
+
+# Extra input as of 2022-08-29
+#REASON reuses above value
+CHOOSE_DS=1919810
+START_DAY=2
 
 # 14-day Big Data Trace Card
 IMAGE_1=images/1.jpg
