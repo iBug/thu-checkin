@@ -175,7 +175,7 @@ def apply2(s: requests.Session) -> bool:
         "end_date": end_date,
         "reason": reason_s,
         "return_college[]": return_college.split(),
-        "files_xck": files_xck
+        "files_xck": files_xck,
         "files_akm": files_akm,
         "files_hs": files_hs,
         "t": reason,
