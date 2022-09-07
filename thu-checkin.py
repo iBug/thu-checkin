@@ -162,10 +162,10 @@ def apply2(s: requests.Session) -> bool:
     end_date = now.strftime("%Y-%m-%d 23:59:59")
     reason_s = random.choice(reason_texts.split(":"))
     # Find uploaded images
-    imgs = re.findall(r'<img src="(' + re.escape(UPLOAD_BASE) + '[^"]*)"[^>]*>', r.text)
-    if len(imgs) != 3:
-        print("apply2: Failed to find uploaded images")
-        return False
+    # Find uploaded images
+    files_xck = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-xck"[^>]*>', r.text)[0])[1]
+    files_akm = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-akm"[^>]*>', r.text)[0])[1]
+    files_hs = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-hs"[^>]*>', r.text)[0])[1]
 
     payload = {
         "_token": parse_token(r.text),
@@ -175,9 +175,9 @@ def apply2(s: requests.Session) -> bool:
         "end_date": end_date,
         "reason": reason_s,
         "return_college[]": return_college.split(),
-        "files_xck": imgs[0],
-        "files_akm": imgs[1],
-        "files_hs": imgs[2],
+        "files_xck": files_xck
+        "files_akm": files_akm,
+        "files_hs": files_hs,
         "t": reason,
     }
     r = s.post(APPLY2_URL, data=payload)
