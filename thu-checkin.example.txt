@@ -4,6 +4,7 @@ PASSWORD=password
 REASON=3
 RETURN_COLLEGE=东校区 西校区 南校区 北校区 中校区 高新校区 先研院 国金院
 REASON_TEXT=今天天气晴朗
+COMMENT_TEXT=今天天气晴朗
 DORM_BUILDING=#114
 DORM=514
 

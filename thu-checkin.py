@@ -27,6 +27,7 @@ password = data["PASSWORD"]
 reason = data["REASON"]
 return_college = data["RETURN_COLLEGE"]
 reason_text = data["REASON_TEXT"]
+comment_text = data["COMMENT_TEXT"]
 dorm_building = data["DORM_BUILDING"]
 dorm = data["DORM"]
 choose_ds = data["CHOOSE_DS"]
@@ -40,7 +41,6 @@ REPORT_URL = "https://weixine.ustc.edu.cn/2020/daliy_report"
 # Not my fault:                                  ^^
 APPLY_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy"
 APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/ipost"
-APPLY2_URL = "https://weixine.ustc.edu.cn/2020/stayinout_apply"
 
 UPLOAD_PAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/xcm"
 UPLOAD_IMAGE_URL = "https://weixine.ustc.edu.cn/2020img/api/upload_for_student"
@@ -142,46 +142,12 @@ def apply(s: requests.Session) -> bool:
         "t": reason,
         "return_college[]": return_college.split(),
         "reason": reason_text,
+        "comment": comment_text,
     }
     r = s.post(APPLY_POST_URL, data=payload)
 
     # Fail if not applied
     apply_success = r.text.find("报备成功") >= 0
-    return apply_success
-
-
-def apply2(s: requests.Session) -> bool:
-    r = s.get(APPLY2_URL)
-    r = s.get(APPLY2_URL, params={"t": reason})
-    now = datetime.datetime.now()
-    if start_day == "2":
-        now += datetime.timedelta(days=1)
-        start_date = now.strftime("%Y-%m-%d 00:00:00")
-    else:
-        start_date = now.strftime("%Y-%m-%d %H:%M:%S")
-    end_date = now.strftime("%Y-%m-%d 23:59:59")
-    reason_s = random.choice(reason_texts.split(":"))
-    # Find uploaded images
-    # Find uploaded images
-    files_xck = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-xck"[^>]*>', r.text)[0])[1]
-    files_akm = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-akm"[^>]*>', r.text)[0])[1]
-    files_hs = re.search(r'value="([^"]*)"', re.search(r'<input[^>]*id="files-hs"[^>]*>', r.text)[0])[1]
-
-    payload = {
-        "_token": parse_token(r.text),
-        "choose_ds": choose_ds,
-        "start_day": start_day,
-        "start_date": start_date,
-        "end_date": end_date,
-        "reason": reason_s,
-        "return_college[]": return_college.split(),
-        "files_xck": files_xck,
-        "files_akm": files_akm,
-        "files_hs": files_hs,
-        "t": reason,
-    }
-    r = s.post(APPLY2_URL, data=payload)
-    apply_success = r.text.find("申请成功") >= 0
     return apply_success
 
 
@@ -225,4 +191,3 @@ if __name__ == "__main__":
     for idx, description in UPLOAD_INFO:
         upload_image(s, idx, description)
     apply(s)
-    #apply2(s) if you want
