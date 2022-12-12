@@ -45,7 +45,6 @@ APPLY_POST_URL = "https://weixine.ustc.edu.cn/2020/apply/daliy/ipost"
 UPLOAD_PAGE_URL = "https://weixine.ustc.edu.cn/2020/upload/xcm"
 UPLOAD_IMAGE_URL = "https://weixine.ustc.edu.cn/2020img/api/upload_for_student"
 UPLOAD_INFO = [
-    (1, "14-day Big Data Trace Card"),
     (2, "An Kang code"),
     (3, "Weekly nucleic acid test result"),
 ]

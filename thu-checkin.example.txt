@@ -13,8 +13,6 @@ DORM=514
 CHOOSE_DS=1919810
 START_DAY=2
 
-# 14-day Big Data Trace Card
-IMAGE_1=images/1.jpg
 # An Kang code
 IMAGE_2=images/2.jpg
 # Weekly nucleic acid test result
