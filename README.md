@@ -2,6 +2,10 @@
 
 推荐点击右上角的 Star 和 Watch 关注本仓库，以及时获知最新更新。
 
+**热烈庆祝清华大学取消健康打卡及出校报备制度！** 以下是本仓库的原 README。
+
+---
+
 ## 环境要求
 
 - 一个 24 小时开机的 Linux 操作系统（需要使用 systemd，如 Ubuntu 18.04, Debian Stretch, CentOS 7, Fedora 等，树莓派也行）
